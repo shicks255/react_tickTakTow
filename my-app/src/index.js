@@ -59,6 +59,7 @@ class Game extends React.Component {
             }],
             stepNumber: 0,
             xIsNext: true,
+            reverse: false,
         };
     }
 
@@ -83,18 +84,18 @@ class Game extends React.Component {
     }
 
     render() {
-        const history = this.state.history;
+        let history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
 
-        const moves = history.map((step, move) =>
+        let moves = history.map((step, move) =>
         {
             const desc = move ?
                 'Go to move #' + move:
                 'Go to game start';
 
             const placement = step.placement;
-            const placementString = move ?
+            const placementString = placement ?
                 '(' + placement.row + ', ' + placement.col + ')': '';
 
             const boldOrNot = move === history.length-1 ?
@@ -111,11 +112,17 @@ class Game extends React.Component {
             )
         });
 
+        if (this.state.reverse === true)
+            moves.reverse();
         let status;
         if (winner)
             status = 'Winner: ' + winner;
         else
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+        const button = this.state.history.length > 1 ?
+            <button onClick={() => this.reverseMoveList()}>Reverse Moves List</button> :
+            '';
 
         return (
             <div className="game">
@@ -124,6 +131,7 @@ class Game extends React.Component {
                         squares={current.squares}
                         onClick={(i) => this.handleClick(i)}
                     />
+                    {button}
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
@@ -139,6 +147,13 @@ class Game extends React.Component {
             stepNumber: step,
             xIsNext: (step % 2) === 0,
         });
+    }
+
+    reverseMoveList()
+    {
+        this.setState({
+            reverse: !this.state.reverse,
+        })
     }
 }
 
