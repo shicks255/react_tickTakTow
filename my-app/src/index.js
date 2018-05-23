@@ -93,6 +93,7 @@ class Game extends React.Component {
         let history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
+        const tie = current.squares.every((square) => square !== null)
 
         let moves = history.map((step, move) =>
         {
@@ -125,6 +126,9 @@ class Game extends React.Component {
             status = 'Winner: ' + winner.winner;
         else
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+        if (tie)
+            status = 'Tie Game...nobody wins';
 
         const button = this.state.history.length > 1 ?
             <button onClick={() => this.reverseMoveList()}>Reverse Moves List</button> :
