@@ -2,14 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-
-
 // functional component
 function Square(props)
 {
+    let style = {};
+    if (props.winningSquare)
+        if (props.winningSquare.squares.includes(props.squareNumber))
+            style = {backgroundColor: 'skyblue'};
+
     return (
         <button className="square"
-                onClick={props.onClick}>
+                onClick={props.onClick}
+                style={style}>
             {props.value}
         </button>
     );
@@ -21,6 +25,8 @@ class Board extends React.Component {
             <Square
                 value={this.props.squares[i]}
                 onClick={() => this.props.onClick(i)}
+                winningSquare={this.props.winningSquares}
+                squareNumber={i}
             />
         );
     }
@@ -116,7 +122,7 @@ class Game extends React.Component {
             moves.reverse();
         let status;
         if (winner)
-            status = 'Winner: ' + winner;
+            status = 'Winner: ' + winner.winner;
         else
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
@@ -130,6 +136,7 @@ class Game extends React.Component {
                     <Board
                         squares={current.squares}
                         onClick={(i) => this.handleClick(i)}
+                        winningSquares={winner}
                     />
                     {button}
                 </div>
@@ -173,7 +180,10 @@ function calculateWinner(squares)
     {
         const [a, b, c] = lines[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c])
-            return squares[a];
+            return {
+                winner: squares[a],
+                squares: lines[i]
+            }
     }
     return null;
 }
